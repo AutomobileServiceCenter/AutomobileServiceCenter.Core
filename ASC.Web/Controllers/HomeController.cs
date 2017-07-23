@@ -42,7 +42,7 @@ namespace ASC.Web.Controllers
 
         public IActionResult Contact()
         {
-            ViewData["Message"] = "Your contact page.";
+            ViewData["Message"] = "contact page.";
             return View();
         }
 
