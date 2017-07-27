@@ -20,9 +20,9 @@ namespace ASC.Web.Controllers
         public IActionResult Index()
         {
             // Set Session Test
-            HttpContext.Session.SetSession("Test", _settings.Value);
+           // HttpContext.Session.SetSession("Test", _settings.Value);
             // Get Session Test
-            var settings = HttpContext.Session.GetSession<ApplicationSettings>("Test");
+          //  var settings = HttpContext.Session.GetSession<ApplicationSettings>("Test");
             
             // Usage of IOptions
             ViewBag.Title = _settings.Value.ApplicationTitle;
