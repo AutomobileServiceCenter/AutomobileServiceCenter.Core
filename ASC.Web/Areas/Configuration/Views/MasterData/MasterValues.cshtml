@@ -138,6 +138,7 @@
 @section Scripts{
     <script>
         $(document).ready(function () {
+            $('.modal').modal();
             // Need to pass Verification Token to get Request Validated for Forgery
             var token = $('input[type=hidden][name=__RequestVerificationToken]', document).val();
             $.ajaxSetup({
@@ -272,6 +273,48 @@
                     $('.select-wrapper').removeClass('valid');
                 }
             });
+
+            // Excel Upload
+            $(document).on('click', '.btnUpload', function () {
+                // Get all files from input file tag
+                var fileUpload = $("#files").get(0);
+                var files = fileUpload.files;
+                var data = new FormData();
+
+                // Process the file create FormData object
+                $.each(files, function (i) {
+                    data.append(files[i].name, files[i]);
+                });
+
+                // Show progress bar
+                $(".progress").removeClass("hide");
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("UploadExcel", "MasterData")",
+                    contentType: false,
+                    processData: false,
+                    data: data,
+                    success: function (message) {
+                        // Hide Progress bar
+                        $(".progress").addClass("hide");
+
+                        if (message.Success) {
+                            // Reload the page on success
+                            window.location.reload();
+                        }
+
+                        if (message.Error) {
+                            // Show Errors
+                            $(".divErrors").removeClass("hide");
+                            $(".errors").html("");
+                            $(".errors").html(message.Text);
+                        }
+                    },
+                    error: function () { }
+                });
+            });
+
         });
     </script>
 }

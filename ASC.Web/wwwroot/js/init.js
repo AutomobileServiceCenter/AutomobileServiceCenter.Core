@@ -4,14 +4,14 @@
         $('.parallax').parallax();
 
         //Prevent browser back and forward buttons.
-        //if (window.history && window.history.pushState) {
-        //    window.history.pushState('forward', '', window.location.pathname);
+        if (window.history && window.history.pushState) {
+            window.history.pushState('forward', '', window.location.href);
 
-        //    $(window).on('popstate', function (e) {
-        //        window.history.pushState('forward', '', window.location.pathname);
-        //        e.preventDefault();
-        //    });
-        //}
+            $(window).on('popstate', function (e) {
+                window.history.pushState('forward', '', window.location.href);
+                e.preventDefault();
+            });
+        }
 
         //Prevent right click on entire window
         $(document).ready(function () {

@@ -15,7 +15,7 @@
 }
 
 <div title="@Localizer["Request culture provider:"] @requestCulture?.Provider?.GetType().Name">
-    <form id="selectLanguage" asp-controller="Home" asp-action="SetCulture" asp-area="" asp-route-returnUrl="@Context.Request.Path"
+    <form id="selectLanguage" asp-controller="Home" asp-action="SetCulture" asp-area="" asp-route-returnUrl="@Context.Request.Path@Context.Request.QueryString"
           method="post" role="form">
         <div class="row">
             <div class="col s8">
