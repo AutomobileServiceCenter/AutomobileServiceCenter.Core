@@ -35,7 +35,7 @@ namespace ASC.Tests.TestUtilities
 
         public void Set(string key, byte[] value)
         {
-            if (sessionFactory.ContainsKey(key))
+            if (!sessionFactory.ContainsKey(key))
                 sessionFactory.Add(key, value);
             else
                 sessionFactory[key] = value;
