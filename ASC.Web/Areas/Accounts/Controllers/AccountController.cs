@@ -161,7 +161,7 @@ namespace ASC.Web.Areas.Accounts.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Customers(CustomersViewModel customer)
         {
-            customer.Customers = HttpContext.Session.GetSession<List<ApplicationUser>>("ServiceEngineers");
+            customer.Customers = HttpContext.Session.GetSession<List<ApplicationUser>>("Customers");
             if (!ModelState.IsValid)
             {
                 return View(customer);

@@ -98,6 +98,7 @@
 @section Scripts{
     <script>
         $(document).ready(function () {
+            $('.btnSubmit').attr('disabled', 'disabled');
             // Initialize DataTable to show list of Engineers
             var table = $('#tblCustomers').DataTable({
                 'pageLength': 3,
@@ -134,7 +135,8 @@
                 $('#Input_Registration_Email').attr('disabled', 'disabled');
 
                 $('#Registration_IsActive').prop('checked', user[1] === 'True' ? true : false);
-                
+
+                $('.btnSubmit').removeAttr('disabled');
                 Materialize.updateTextFields();
             });
 
