@@ -50,6 +50,14 @@ namespace ASC.Web
 
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
+
+            if (env.IsProduction())
+            {
+                builder.AddAzureKeyVault(Environment.GetEnvironmentVariable("VaultUrl"),
+                   Environment.GetEnvironmentVariable("ClientId"),
+                   Environment.GetEnvironmentVariable("ClientSecret"));
+                Configuration = builder.Build();
+            }
         }
 
         public IConfigurationRoot Configuration { get; }
