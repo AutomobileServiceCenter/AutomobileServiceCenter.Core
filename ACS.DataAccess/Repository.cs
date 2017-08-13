@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using System.Reflection;
 
 namespace ASC.DataAccess
 {
@@ -24,7 +25,6 @@ namespace ASC.DataAccess
 
             tableClient = storageAccount.CreateCloudTableClient();
             CloudTable table = tableClient.GetTableReference(typeof(T).Name);
-            table.CreateIfNotExistsAsync();
             this.storageTable = table;
             this.Scope = scope;
         }
@@ -98,6 +98,18 @@ namespace ASC.DataAccess
             return result.Results as IEnumerable<T>;
         }
 
+        public async Task CreateTableAsync()
+        {
+            CloudTable table = tableClient.GetTableReference(typeof(T).Name);
+            await table.CreateIfNotExistsAsync();
+
+            if (typeof(IAuditTracker).IsAssignableFrom(typeof(T)))
+            {
+                var auditTable = tableClient.GetTableReference($"{typeof(T).Name}Audit");
+                await auditTable.CreateIfNotExistsAsync();
+            }
+        }
+
         private async Task<TableResult> ExecuteAsync(TableOperation operation)
         {
             var rollbackAction = CreateRollbackAction(operation);
@@ -116,7 +128,6 @@ namespace ASC.DataAccess
                 var auditRollbackAction = CreateRollbackAction(auditOperation, true);
 
                 var auditTable = tableClient.GetTableReference($"{typeof(T).Name}Audit");
-                await auditTable.CreateIfNotExistsAsync();
                 await auditTable.ExecuteAsync(auditOperation);
 
                 Scope.RollbackActions.Enqueue(auditRollbackAction);

@@ -243,7 +243,7 @@ namespace ASC.Web.Areas.ServiceRequests.Controllers
 
             // Get Service Request details
             var serviceRequesrDetails = await _serviceRequestOperations.GetServiceRequestByRowKey(message.PartitionKey);
-            
+
             // Populate message details
             message.FromEmail = HttpContext.User.GetCurrentUserDetails().Email;
             message.FromDisplayName = HttpContext.User.GetCurrentUserDetails().Name;
@@ -252,16 +252,25 @@ namespace ASC.Web.Areas.ServiceRequests.Controllers
 
             // Get Customer and Service Engineer names
             var customerName = (await _userManager.FindByEmailAsync(serviceRequesrDetails.PartitionKey)).UserName;
-            var serviceEngineerName = (await _userManager.FindByEmailAsync(serviceRequesrDetails.ServiceEngineer)).UserName;
+            var serviceEngineerName = string.Empty;
+            if (!string.IsNullOrWhiteSpace(serviceRequesrDetails.ServiceEngineer))
+            {
+                serviceEngineerName = (await _userManager.FindByEmailAsync(serviceRequesrDetails.ServiceEngineer)).UserName;
+            }
             var adminName = (await _userManager.FindByEmailAsync(_options.Value.AdminEmail)).UserName;
 
             // Save the message to Azure Storage
             await _serviceRequestMessageOperations.CreateServiceRequestMessageAsync(message);
 
+            var users = new List<string> { customerName, adminName };
+            if (!string.IsNullOrWhiteSpace(serviceEngineerName))
+            {
+                users.Add(serviceEngineerName);
+            }
             // Broadcast the message to all clients asscoaited with Service Request
             _signalRConnectionManager.GetHubContext<ServiceMessagesHub>()
                 .Clients
-                .Users(new List<string> { customerName, serviceEngineerName, adminName })
+                .Users(users)
                 .publishMessage(message);
             // Return true
             return Json(true);
@@ -279,17 +288,28 @@ namespace ASC.Web.Areas.ServiceRequests.Controllers
 
             // Get Customer and Service Engineer names
             var customerName = (await _userManager.FindByEmailAsync(serviceRequest.PartitionKey)).UserName;
-            var serviceEngineerName = (await _userManager.FindByEmailAsync(serviceRequest.ServiceEngineer)).UserName;
+            var serviceEngineerName = string.Empty;
+            if (!string.IsNullOrWhiteSpace(serviceRequest.ServiceEngineer))
+            {
+                serviceEngineerName = (await _userManager.FindByEmailAsync(serviceRequest.ServiceEngineer)).UserName;
+            }
             var adminName = (await _userManager.FindByEmailAsync(_options.Value.AdminEmail)).UserName;
 
             // check Admin, Service Engineer and customer are connected.
             var isAdminOnline = await _onlineUsersOperations.GetOnlineUserAsync(_options.Value.AdminEmail);
-            var isServiceEngineerOnline = await _onlineUsersOperations.GetOnlineUserAsync(serviceRequest.ServiceEngineer);
+            var isServiceEngineerOnline = false;
+            if (!string.IsNullOrWhiteSpace(serviceRequest.ServiceEngineer))
+            {
+                isServiceEngineerOnline = await _onlineUsersOperations.GetOnlineUserAsync(serviceRequest.ServiceEngineer);
+            }
             var isCustomerOnline = await _onlineUsersOperations.GetOnlineUserAsync(serviceRequest.PartitionKey);
 
             List<string> users = new List<string>();
             if (isAdminOnline) users.Add(adminName);
-            if (isServiceEngineerOnline) users.Add(serviceEngineerName);
+            if (!string.IsNullOrWhiteSpace(serviceEngineerName))
+            {
+                if (isServiceEngineerOnline) users.Add(serviceEngineerName);
+            }
             if (isCustomerOnline) users.Add(customerName);
 
             // Send notifications

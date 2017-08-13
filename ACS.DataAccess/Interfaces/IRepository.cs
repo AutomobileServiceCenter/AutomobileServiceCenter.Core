@@ -17,5 +17,6 @@ namespace ASC.DataAccess.Interfaces
         Task<IEnumerable<T>> FindAllAsync();
         Task<IEnumerable<T>> FindAllByQuery(string query);
         Task<IEnumerable<T>> FindAllInAuditByQuery(string query);
+        Task CreateTableAsync();
     }
 }

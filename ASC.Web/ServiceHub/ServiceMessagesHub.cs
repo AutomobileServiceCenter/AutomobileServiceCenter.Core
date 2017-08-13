@@ -69,17 +69,28 @@ namespace ASC.Web.ServiceHub
 
             // Get Customer and Service Engineer names
             var customerName = (await _userManager.FindByEmailAsync(serviceRequest.PartitionKey)).UserName;
-            var serviceEngineerName = (await _userManager.FindByEmailAsync(serviceRequest.ServiceEngineer)).UserName;
+            var serviceEngineerName = string.Empty;
+            if (!string.IsNullOrWhiteSpace(serviceRequest.ServiceEngineer))
+            {
+                serviceEngineerName = (await _userManager.FindByEmailAsync(serviceRequest.ServiceEngineer)).UserName;
+            }
             var adminName = (await _userManager.FindByEmailAsync(_options.Value.AdminEmail)).UserName;
 
             // check Admin, Service Engineer and customer are connected.
             var isAdminOnline = await _onlineUserOperations.GetOnlineUserAsync(_options.Value.AdminEmail);
-            var isServiceEngineerOnline = await _onlineUserOperations.GetOnlineUserAsync(serviceRequest.ServiceEngineer);
+            var isServiceEngineerOnline = false;
+            if (!string.IsNullOrWhiteSpace(serviceRequest.ServiceEngineer))
+            {
+                isServiceEngineerOnline = await _onlineUserOperations.GetOnlineUserAsync(serviceRequest.ServiceEngineer);
+            }
             var isCustomerOnline = await _onlineUserOperations.GetOnlineUserAsync(serviceRequest.PartitionKey);
 
             List<string> users = new List<string>();
             if (isAdminOnline) users.Add(adminName);
-            if (isServiceEngineerOnline) users.Add(serviceEngineerName);
+            if (!string.IsNullOrWhiteSpace(serviceEngineerName))
+            {
+                if (isServiceEngineerOnline) users.Add(serviceEngineerName);
+            }
             if (isCustomerOnline) users.Add(customerName);
 
             // Send notifications
