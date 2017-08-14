@@ -21,7 +21,7 @@ namespace ASC.DataAccess
 
         public Repository(IUnitOfWork scope)
         {
-            storageAccount = CloudStorageAccount.Parse("UseDevelopmentStorage=true");
+            storageAccount = CloudStorageAccount.Parse(scope.ConnectionString);
 
             tableClient = storageAccount.CreateCloudTableClient();
             CloudTable table = tableClient.GetTableReference(typeof(T).Name);

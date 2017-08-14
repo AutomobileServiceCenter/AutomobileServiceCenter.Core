@@ -139,7 +139,7 @@ namespace ASC.Web
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddSingleton<IIdentitySeed, IdentitySeed>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUnitOfWork>(p => new UnitOfWork(Configuration.GetSection("ConnectionStrings:DefaultConnection").Value));
             services.AddScoped<IMasterDataOperations, MasterDataOperations>();
             services.AddSingleton<IMasterDataCacheOperations, MasterDataCacheOperations>();
             services.AddScoped<ILogDataOperations, LogDataOperations>();

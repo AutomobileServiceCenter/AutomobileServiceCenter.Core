@@ -13,9 +13,11 @@ namespace ASC.DataAccess
         private bool complete;
         private Dictionary<string, object> _repositories;
         public Queue<Task<Action>> RollbackActions { get; set; }
+        public string ConnectionString { get; set; }
 
-        public UnitOfWork()
+        public UnitOfWork(string connectionString)
         {
+            ConnectionString = connectionString;
             RollbackActions = new Queue<Task<Action>>();
         }
 
