@@ -12,7 +12,10 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ClientSecret": "upoqk+FdLzouWqlsr+DWs7P2hFKJK2m+6kTmWkeNLnw=",
+        "ClientId": "cbd81c27-4f75-42ac-ae79-23fc453b932c",
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "VaultUrl": "https://ASCVault.vault.azure.net/"
       }
     },
     "ASC.Web": {
